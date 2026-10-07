@@ -24,16 +24,17 @@ Run all commands below from the repository root. The default
 ```bash
 dc() { docker compose -f docker/database-capture/compose.yaml "$@"; }
 dc config --quiet
+docker compose up --build -d
 ```
 
-Start SQL Server-only flow for session 2:
+Start SQL Server only:
 
 ```bash
 dc up -d sqlserver
 dc run --rm sqlserver-init
 ```
 
-Start PostgreSQL Northstar appointments CDC lab:
+Start PostgreSQL only:
 
 ```bash
 dc up -d --build postgres cdc-receiver debezium
