@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.db
+.env
+.venv/*
+northstar_care_cdc_demo.egg-info/*
+.ipynb_checkpoints/

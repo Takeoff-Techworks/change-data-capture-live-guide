@@ -1,0 +1,9 @@
+name: change-data-capture-guide
+services:
+  # Optional extension scaffold. Baseline simulated mode intentionally has no services.
+  postgres:
+    image: postgres:18
+    profiles: ["postgres-debezium"]
+    environment:
+      POSTGRES_PASSWORD: demo-only
+    command: ["postgres", "-c", "wal_level=logical"]

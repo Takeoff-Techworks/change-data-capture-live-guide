@@ -1,0 +1,1 @@
+{"table":"appointments","__$operation":4,"key":{"appointment_id":"appt2"},"before":{"appointment_id":"appt2","patient_id":"p2","status":"scheduled"},"after":{"appointment_id":"appt2","patient_id":"p2","status":"no_show"}}

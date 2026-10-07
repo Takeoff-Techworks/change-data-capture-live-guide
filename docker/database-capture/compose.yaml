@@ -1,0 +1,127 @@
+name: change-data-capture-oreilly-live
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: northstar_cdc_lab
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres-lab-only
+    ports:
+      - "127.0.0.1:15432:5432"
+      - "[::1]:15432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ../postgres-app-integration/postgres/init.sql:/docker-entrypoint-initdb.d/01-northstar-seed.sql:ro
+    command: ["postgres", "-c", "wal_level=logical", "-c", "max_replication_slots=10", "-c", "max_wal_senders=10", "-c", "max_slot_wal_keep_size=1GB"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d northstar_cdc_lab"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  postgres-init:
+    image: postgres:18
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      PGHOST: postgres
+      PGDATABASE: northstar_cdc_lab
+      PGUSER: postgres
+      PGPASSWORD: postgres-lab-only
+    volumes:
+      - ../postgres-app-integration/postgres/init.sql:/scripts/init.sql:ro
+    command:
+      - /bin/bash
+      - -ec
+      - |
+        READY=$$(psql -v ON_ERROR_STOP=1 -tAc "SELECT to_regclass('public.appointments') IS NOT NULL");
+        if [ "$$READY" = "t" ]; then
+          echo "Northstar appointments already exist; preserving current exercise data.";
+        else
+          psql -v ON_ERROR_STOP=1 --single-transaction -f /scripts/init.sql;
+        fi
+    restart: "no"
+  cdc-receiver:
+    build: ./receiver
+    ports: ["3000:3000"]
+    volumes:
+      - ./receiver/receiver.py:/app/receiver.py:ro
+      - received-events:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      MSSQL_AGENT_ENABLED: "true"
+    ports: ["1435:1433"]
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      sqlserver: {condition: service_started}
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+    volumes:
+      - ./sqlserver:/scripts:ro
+    command: >
+      /bin/bash -c '
+      SQLCMD=$$(command -v sqlcmd || true);
+      if [ -z "$$SQLCMD" ]; then
+        if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then SQLCMD=/opt/mssql-tools18/bin/sqlcmd; fi;
+      fi;
+      if [ -z "$$SQLCMD" ]; then
+        if [ -x /opt/mssql-tools/bin/sqlcmd ]; then SQLCMD=/opt/mssql-tools/bin/sqlcmd; fi;
+      fi;
+      if [ -z "$$SQLCMD" ]; then
+        echo "sqlcmd not found in this image";
+        exit 1;
+      fi;
+      SERVER=tcp:sqlserver,1433;
+      READY=0;
+      for i in {1..90}; do
+        "$$SQLCMD" -S "$$SERVER" -U sa -P "$$SA_PASSWORD" -C -Q "SELECT 1" && READY=1 && break;
+        echo "Waiting for SQL Server...";
+        sleep 2;
+      done;
+      if [ "$$READY" != "1" ]; then
+        echo "SQL Server did not become ready. Inspect: docker compose -f docker/database-capture/compose.yaml logs sqlserver";
+        exit 1;
+      fi;
+      "$$SQLCMD" -S "$$SERVER" -U sa -P "$$SA_PASSWORD" -C -i /scripts/init.sql'
+    restart: "no"
+  debezium:
+    image: quay.io/debezium/server:3.6.2.Final
+    depends_on:
+      postgres: {condition: service_healthy}
+      postgres-init: {condition: service_completed_successfully}
+      cdc-receiver: {condition: service_healthy}
+    volumes:
+      - ./debezium/application.properties:/debezium/config/application.properties:ro
+      - debezium-offsets:/debezium/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/q/health"]
+      interval: 5s
+      timeout: 3s
+      start_period: 30s
+      retries: 10
+  debezium-app:
+    image: quay.io/debezium/server:3.6.2.Final
+    profiles: ["app-capture"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      cdc-receiver: {condition: service_healthy}
+    volumes:
+      - ./debezium/application-app.properties:/debezium/config/application.properties:ro
+      - debezium-app-offsets:/debezium/data
+volumes:
+  postgres-data:
+  sqlserver-data:
+  debezium-offsets:
+  debezium-app-offsets:
+  received-events:

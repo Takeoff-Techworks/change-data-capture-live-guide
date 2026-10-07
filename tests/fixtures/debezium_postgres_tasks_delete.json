@@ -1,0 +1,1 @@
+{"key":{"payload":{"task_id":"task99"}},"payload":{"op":"d","source":{"table":"care_tasks"},"before":{"task_id":"task99","patient_id":"p2","status":"open"},"after":null}}

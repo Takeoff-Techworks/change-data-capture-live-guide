@@ -1,0 +1,1 @@
+{"table":"care_tasks","__$operation":2,"key":{"task_id":"task99"},"after":{"task_id":"task99","patient_id":"p2","task_type":"reschedule","status":"open"}}

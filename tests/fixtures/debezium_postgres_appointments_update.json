@@ -1,0 +1,1 @@
+{"key":{"payload":{"appointment_id":"appt2"}},"payload":{"op":"u","ts_ms":1700000000000,"source":{"table":"appointments"},"before":{"appointment_id":"appt2","patient_id":"p2","status":"scheduled"},"after":{"appointment_id":"appt2","patient_id":"p2","status":"no_show"}}}

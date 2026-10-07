@@ -1,0 +1,34 @@
+[project]
+name = "northstar-care-cdc-demo"
+version = "0.1.0"
+description = "Synthetic care-coordination CDC teaching demo"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115", "uvicorn[standard]>=0.30", "sqlalchemy>=2.0",
+  "pydantic>=2.8", "jinja2>=3.1", "python-multipart>=0.0.9",
+  "python-dotenv>=1.0"
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.2"]
+sqlserver = ["pyodbc>=5.1"]
+dev = ["pytest>=8.0", "httpx>=0.27", "ruff>=0.6"]
+notebooks = [
+  "notebook>=7.5.6",
+  "langchain>=1.0,<2.0",
+  "langchain-google-genai>=4.0",
+  "dotenv"
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+ignore = ["B008", "BLE001"]  # Conventional FastAPI dependency defaults; CDC records failures broadly.
