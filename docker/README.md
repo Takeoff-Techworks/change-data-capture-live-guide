@@ -3,6 +3,15 @@
 Run all commands below from the repository root. The default
 [web demo](../app/README.md) and sessions 4–5 notebooks do not require Docker.
 
+## Where to run Docker
+
+- **Local Docker**: install Docker with Compose v2 and run the commands below.
+- **GitHub Codespaces / dev container**: the repository's
+  [`.devcontainer/devcontainer.json`](../.devcontainer/devcontainer.json) enables
+  Docker-in-Docker, so the same `docker compose` commands work in the terminal. Ports
+  `15432`, `1435`, and `3000` are forwarded automatically; allow 4 cores / 8 GB RAM.
+  In a codespace, connect clients to the forwarded `localhost` ports.
+
 ## Directory map
 
 | Path | Purpose |
