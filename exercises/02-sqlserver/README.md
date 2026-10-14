@@ -7,6 +7,18 @@ For container setup, see the [Docker stack](../../docker/database-capture/README
 
 ## 1. Connect to the container database
 
+**Start the stack first.** The container is not started automatically, including in
+Codespaces and dev containers. From the repository root, run:
+
+```bash
+docker compose -f docker/database-capture/compose.yaml up -d sqlserver
+docker compose -f docker/database-capture/compose.yaml run --rm sqlserver-init
+docker compose -f docker/database-capture/compose.yaml ps sqlserver
+```
+
+`ps` should show `Up` and `0.0.0.0:1435->1433/tcp`. Otherwise the connection below fails
+with error 35.
+
 Install the [VS Code SQL Server extension](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql).
 Open **SQL Server > Add Connection > Parameters**:
 

@@ -37,7 +37,8 @@ To run the web demo without Docker: `pip install -e ".[dev,postgres]"` then `mak
 
 1. Select **Code → Codespaces → Create codespace on main**.
 2. Wait for setup to finish (installs Python dependencies and Docker-in-Docker).
-3. Run the Docker commands above in the codespace terminal. Forwarded ports
+3. Start the stack: the container does not start automatically. Run the Docker commands above in the codespace terminal
+   (for SQL Server only, follow the start steps in the [session 2 exercise](exercises/02-sqlserver/README.md)). Forwarded ports
    (8000 web demo, 3000 receiver, 15432 PostgreSQL, 1435 SQL Server) appear in the **Ports** tab.
 
 A 2-core / 8 GB RAM machine works; use 4 cores / 16 GB if available for smoother startup.
