@@ -9,7 +9,7 @@ Run all commands below from the repository root. The default
 - **GitHub Codespaces / dev container**: the repository's
   [`.devcontainer/devcontainer.json`](../.devcontainer/devcontainer.json) enables
   Docker-in-Docker, so the same `docker compose` commands work in the terminal. Ports
-  `15432`, `1435`, and `3000` are forwarded automatically; allow 4 cores / 8 GB RAM.
+  `15432`, `1435`, and `3000` are forwarded automatically; allow at least 2 cores / 8 GB RAM.
   In a codespace, connect clients to the forwarded `localhost` ports.
 
 ## Directory map

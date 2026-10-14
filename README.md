@@ -40,7 +40,7 @@ To run the web demo without Docker: `pip install -e ".[dev,postgres]"` then `mak
 3. Run the Docker commands above in the codespace terminal. Forwarded ports
    (8000 web demo, 3000 receiver, 15432 PostgreSQL, 1435 SQL Server) appear in the **Ports** tab.
 
-Choose a machine with at least 4 cores / 8 GB RAM.
+A 2-core / 8 GB RAM machine works; use 4 cores / 16 GB if available for smoother startup.
 
 ### Dev container (local VS Code)
 
