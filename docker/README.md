@@ -19,7 +19,7 @@ Run all commands below from the repository root. The default
 | PostgreSQL app integration | [`postgres-app-integration/compose.yaml`](postgres-app-integration/compose.yaml) | `northstar-postgres-seed-lab` | `postgres`, `receiver`, `debezium` (`capture`), `debezium-app` (`app-capture`) | PostgreSQL `localhost:15432`; receiver internal (`receiver:8081`) |
 | Optional PostgreSQL scaffold | [`optional-postgres/compose.yaml`](optional-postgres/compose.yaml) | `change-data-capture-guide` | `postgres` (`postgres-debezium` profile) | No published ports |
 
-## Database capture
+## Course Environment
 
 ```bash
 dc() { docker compose -f docker/database-capture/compose.yaml "$@"; }
