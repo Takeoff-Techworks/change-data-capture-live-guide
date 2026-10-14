@@ -407,10 +407,9 @@ without deleting its volumes.
 
 ## 11. Resources
 
-- [Enable CDC on a table](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sys-sp-cdc-enable-table-transact-sql?view=sql-server-ver17)
-- [Query CDC data and LSN windows](https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/work-with-change-data-sql-server?view=sql-server-ver17)
-- [Monitor CDC jobs and retention](https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/administer-and-monitor-change-data-capture-sql-server?view=sql-server-ver17)
-- [Northstar event contract](../../docs/event-contract.md)
+- [Enable CDC on a table](https://learn.microsoft.com/sql/relational-databases/system-stored-procedures/sys-sp-cdc-enable-table-transact-sql?view=sql-server-ver17)
+- [Query CDC data and LSN windows](https://learn.microsoft.com/sql/relational-databases/track-changes/work-with-change-data-sql-server?view=sql-server-ver17)
+- [Monitor CDC jobs and retention](https://learn.microsoft.com/sql/relational-databases/track-changes/administer-and-monitor-change-data-capture-sql-server?view=sql-server-ver17)
 - [Course exercises](../README.md)
 - [Database initializer](../../docker/database-capture/sqlserver/init.sql)
 <details>
