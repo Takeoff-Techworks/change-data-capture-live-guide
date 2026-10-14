@@ -12,6 +12,16 @@ separate `northstar_app` database.
 
 ## 1. Connect to the container database
 
+**Start the stack first.** The container is not started automatically, including in
+Codespaces and dev containers. From the repository root, run:
+
+```bash
+docker compose -f docker/database-capture/compose.yaml up -d --build postgres cdc-receiver debezium
+```
+
+
+## 2. Connect to the container database
+
 Run Docker commands from the repository root in any host terminal. Use Terminal
 A for Docker commands, a PostgreSQL client for SQL, and Terminal C for the
 optional Python app.
@@ -79,7 +89,7 @@ Expect PostgreSQL 18, database `northstar_cdc_lab`, `wal_level = logical`,
 
 </details>
 
-## 2. Verify the seed
+## 3. Verify the seed
 
 ```sql
 SELECT count(*) AS users FROM public.users;
@@ -102,7 +112,7 @@ Expect 7 users, 2 providers, 10 patients, 10 assignments, 10 appointments,
 
 </details>
 
-## 3. Verify CDC
+## 4. Verify CDC
 
 ```sql
 SELECT pubname, schemaname, tablename
@@ -123,7 +133,7 @@ If missing, use [Troubleshooting](#connection-or-capture-failures).
 
 </details>
 
-## 4. Start capture and read the snapshot
+## 5. Start capture and read the snapshot
 
 From the repository root in a host terminal:
 
@@ -168,7 +178,7 @@ Expect `northstar_http_slot` with plugin `pgoutput` and `active = true`.
 
 </details>
 
-## 5. Generate committed changes
+## 6. Generate committed changes
 
 Run once in your SQL client after verifying capture:
 
@@ -211,7 +221,7 @@ Expect 10 appointments: `appt1` is canceled, `appt2` is still no-show, and
 
 </details>
 
-## 6. Read the changes
+## 7. Read the changes
 
 From the repository root in a host terminal:
 
@@ -240,7 +250,7 @@ For a fresh run without retries, wait until fourteen events are present:
 
 </details>
 
-## 7. Verify rollback
+## 8. Verify rollback
 
 In your SQL client:
 
@@ -280,7 +290,7 @@ Search the output for `appt2` and `appt_rollback`. Wait for
 
 </details>
 
-## 8. Verify recovery
+## 9. Verify recovery
 
 From the repository root in a host terminal, stop only Debezium:
 
@@ -323,7 +333,7 @@ restart. Keep the slot and offsets together; restarts can redeliver events.
 
 </details>
 
-## 9. Finish
+## 10. Finish
 
 Continue to the [Python bonus exercise](BONUS.md) with PostgreSQL running, or
 stop here.
@@ -337,26 +347,14 @@ docker compose -f docker/database-capture/compose.yaml --profile app-capture sto
 
 This preserves database data, connector offsets, and the event journal.
 
-## 10. Resources
+## Resources
 
-- [Compose configuration](../../docker/database-capture/compose.yaml)
-- [Lab connector settings](../../docker/database-capture/debezium/application.properties)
 - [Debezium Server HTTP sink](https://debezium.io/documentation/reference/3.4/operations/debezium-server.html#_http)
 - [Debezium PostgreSQL 18 support](https://debezium.io/releases/3.4/)
-- [PostgreSQL container data layout](https://hub.docker.com/_/postgres)
-- [Logical replication settings](https://www.postgresql.org/docs/18/logical-replication-config.html)
-- [Logical replication security](https://www.postgresql.org/docs/18/logical-replication-security.html)
-- [Publications](https://www.postgresql.org/docs/18/sql-createpublication.html)
-- [Replica identity](https://www.postgresql.org/docs/18/sql-altertable.html#SQL-ALTERTABLE-REPLICA-IDENTITY)
-- [Debezium offsets](https://debezium.io/documentation/reference/3.4/configuration/storage.html)
-- [Snapshot behavior](https://debezium.io/documentation/reference/3.4/connectors/postgresql.html#postgresql-snapshots)
-- [Change-event fields](https://debezium.io/documentation/reference/3.4/connectors/postgresql.html#postgresql-change-events)
 - [Logical decoding](https://www.postgresql.org/docs/18/logicaldecoding-explanation.html)
+- [Change-event fields](https://debezium.io/documentation/reference/3.4/connectors/postgresql.html#postgresql-change-events)
 - [Debezium recovery](https://debezium.io/documentation/reference/3.4/development/engine.html)
 - [Replication slots](https://www.postgresql.org/docs/18/view-pg-replication-slots.html)
-- [WAL retention settings](https://www.postgresql.org/docs/18/runtime-config-replication.html#GUC-MAX-SLOT-WAL-KEEP-SIZE)
-- [SQLAlchemy Psycopg support](https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg)
-- [Optional Kafka extension](../extensions/kafka.md)
 
 ## 11. Troubleshooting
 

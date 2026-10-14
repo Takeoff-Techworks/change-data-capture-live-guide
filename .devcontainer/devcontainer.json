@@ -21,7 +21,8 @@
         "ms-toolsai.jupyter",
         "ms-azuretools.vscode-docker",
         "ms-mssql.mssql",
-        "charliermarsh.ruff"
+        "charliermarsh.ruff",
+        "ms-ossdata.vscode-pgsql"
       ]
     }
   }
