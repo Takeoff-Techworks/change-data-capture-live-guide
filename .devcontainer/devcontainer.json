@@ -1,0 +1,28 @@
+{
+  "name": "CDC Live Guide",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": { "moby": false }
+  },
+  "hostRequirements": { "cpus": 2, "memory": "8gb" },
+  "postCreateCommand": "pip install -e '.[dev,postgres,notebooks]'",
+  "forwardPorts": [8000, 3000, 15432, 1435],
+  "portsAttributes": {
+    "8000": { "label": "Northstar web demo" },
+    "3000": { "label": "CDC receiver" },
+    "15432": { "label": "PostgreSQL" },
+    "1435": { "label": "SQL Server" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker",
+        "ms-mssql.mssql",
+        "charliermarsh.ruff"
+      ]
+    }
+  }
+}

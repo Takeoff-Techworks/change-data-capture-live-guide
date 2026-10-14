@@ -17,6 +17,40 @@ Optional integration walkthroughs run the web app on
 [SQL Server](exercises/02-sqlserver/BONUS.md)
 or [PostgreSQL](exercises/03-postgres/BONUS.md).
 
+## Run the lab
+
+Pick one option. All commands run from the repository root.
+
+### Docker (local)
+
+Requires Docker with Compose v2 (about 8 GB RAM for SQL Server and PostgreSQL).
+
+```bash
+docker compose -f docker/database-capture/compose.yaml up --build -d
+docker compose -f docker/database-capture/compose.yaml down   # stop; add -v to wipe data
+```
+
+See the [Docker stack guide](docker/README.md) for the other stacks.
+To run the web demo without Docker: `pip install -e ".[dev,postgres]"` then `make run`.
+
+### GitHub Codespaces
+
+1. Select **Code → Codespaces → Create codespace on main**.
+2. Wait for setup to finish (installs Python dependencies and Docker-in-Docker).
+3. Start the stack: the container does not start automatically. Run the Docker commands above in the codespace terminal
+   (for SQL Server only, follow the start steps in the [session 2 exercise](exercises/02-sqlserver/README.md)). Forwarded ports
+   (8000 web demo, 3000 receiver, 15432 PostgreSQL, 1435 SQL Server) appear in the **Ports** tab.
+
+A 2-core / 8 GB RAM machine works; use 4 cores / 16 GB if available for smoother startup.
+
+### Dev container (local VS Code)
+
+1. Install Docker and the VS Code *Dev Containers* extension.
+2. Open the repository and run **Dev Containers: Reopen in Container**.
+3. Use the same Docker commands in the integrated terminal.
+
+The configuration lives in [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json).
+
 ## Repository map
 
 | Path | Purpose |

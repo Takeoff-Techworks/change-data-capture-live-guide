@@ -7,6 +7,18 @@ For container setup, see the [Docker stack](../../docker/database-capture/README
 
 ## 1. Connect to the container database
 
+**Start the stack first.** The container is not started automatically, including in
+Codespaces and dev containers. From the repository root, run:
+
+```bash
+docker compose -f docker/database-capture/compose.yaml up -d sqlserver
+docker compose -f docker/database-capture/compose.yaml run --rm sqlserver-init
+docker compose -f docker/database-capture/compose.yaml ps sqlserver
+```
+
+`ps` should show `Up` and `0.0.0.0:1435->1433/tcp`. Otherwise the connection below fails
+with error 35.
+
 Install the [VS Code SQL Server extension](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql).
 Open **SQL Server > Add Connection > Parameters**:
 
@@ -522,7 +534,7 @@ GO
 | Issue | Check | Return to Step |
 | --- | --- | --- |
 | <a id="fix-initializer-exits-nonzero"></a>Initializer exits nonzero | Inspect its command output and `dc logs sqlserver`; resolve the error before continuing. | [2](#2-verify-the-seed), [3](#3-verify-cdc) |
-| <a id="fix-host-connection-fails"></a>Host connection fails | Use port `1435`; container-to-container SQL clients use `sqlserver:1433`. | [1](#1-connect-to-the-container-database) |
+| <a id="fix-host-connection-fails"></a>Host connection fails | Use `localhost` with port `1435` (or `localhost,1435`); container-to-container SQL clients use `sqlserver:1433`. Error 35 means nothing answered on that port: run `docker compose -f docker/database-capture/compose.yaml ps sqlserver` (it must be `running`, with `0.0.0.0:1435->1433`), check `logs --tail=100 sqlserver` for memory or startup errors (SQL Server needs about 2 GB free), then run `up -d sqlserver` and `run --rm sqlserver-init` if needed. In a Codespace or dev container, connect from VS Code running inside it so `localhost` reaches the container. | [1](#1-connect-to-the-container-database) |
 | <a id="fix-cdc-rows-never-arrive"></a>CDC rows never arrive | Confirm commits, Agent status, capture jobs, and `sys.dm_cdc_errors`. | [6](#6-wait-for-capture), [8](#8-verify-rollback) |
 | <a id="fix-capture-job-stopped"></a>Capture job stopped | Resolve the error, then use `EXEC sys.sp_cdc_start_job @job_type = N'capture';` only if stopped. | [3](#3-verify-cdc) |
 | <a id="fix-error-313"></a>Error 313 | Check LSN endpoints against the currently retained interval. | [6](#6-wait-for-capture), [9](#9-read-the-next-checkpoint-window) |
