@@ -70,6 +70,7 @@ class LLMAssistantProvider:
             f"{SYSTEM_PROMPT}\n\n"
             "Rules:\n"
             "- Use only the provided facts.\n"
+            "- Refer to patients by patient_display_name; keep patient IDs out of the answer.\n"
             "- If the question asks for diagnosis, treatment, medication, symptoms, or clinical risk, "
             "reply that this assistant supports administrative coordination only.\n"
             "- Keep answer to at most three short sentences.\n"

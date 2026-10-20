@@ -114,8 +114,14 @@ def home(request: Request, db: Session = Depends(get_db)):
 @app.get("/reception", response_class=HTMLResponse)
 def reception(request: Request, db: Session = Depends(get_db)):
     user = user_for(request, db)
+    patients = visible_patients(db, user)
+    patient_names = {p.patient_id: p.display_name for p in patients}
     appointments = (
-        db.execute(select(Appointment).order_by(Appointment.scheduled_start_at.desc()))
+        db.execute(
+            select(Appointment)
+            .where(Appointment.patient_id.in_(patient_names))
+            .order_by(Appointment.scheduled_start_at.desc())
+        )
         .scalars()
         .all()
     )
@@ -127,7 +133,8 @@ def reception(request: Request, db: Session = Depends(get_db)):
             db,
             user,
             appointments=appointments,
-            patients=visible_patients(db, user),
+            patients=patients,
+            patient_names=patient_names,
             providers=list(db.scalars(select(Provider))),
         ),
     )
@@ -171,6 +178,7 @@ def change_appointment(
 @app.get("/nurse", response_class=HTMLResponse)
 def nurse(request: Request, db: Session = Depends(get_db)):
     user = user_for(request, db)
+    patient_names = {p.patient_id: p.display_name for p in visible_patients(db, user)}
     rows = [
         q
         for q in db.query(CareWorkQueue).order_by(CareWorkQueue.priority_score.desc()).all()
@@ -180,7 +188,12 @@ def nurse(request: Request, db: Session = Depends(get_db)):
         request=request,
         name="nurse.html",
         context=base_context(
-            request, db, user, queue=rows, tasks=list(db.scalars(select(CareTask)))
+            request,
+            db,
+            user,
+            queue=rows,
+            tasks=list(db.scalars(select(CareTask).where(CareTask.patient_id.in_(patient_names)))),
+            patient_names=patient_names,
         ),
     )
 
@@ -198,13 +211,19 @@ def task_action(task_id: str, action: str, request: Request, db: Session = Depen
 @app.get("/clinician", response_class=HTMLResponse)
 def clinician(request: Request, db: Session = Depends(get_db)):
     user = user_for(request, db)
-    allowed = {p.patient_id for p in visible_patients(db, user)}
-    referrals = [r for r in db.scalars(select(Referral)).all() if r.patient_id in allowed]
+    patients = visible_patients(db, user)
+    patient_names = {p.patient_id: p.display_name for p in patients}
+    referrals = [r for r in db.scalars(select(Referral)).all() if r.patient_id in patient_names]
     return templates.TemplateResponse(
         request=request,
         name="clinician.html",
         context=base_context(
-            request, db, user, patients=[p for p in visible_patients(db, user)], referrals=referrals
+            request,
+            db,
+            user,
+            patients=patients,
+            patient_names=patient_names,
+            referrals=referrals,
         ),
     )
 
@@ -230,7 +249,15 @@ def assistant_view(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         request=request,
         name="assistant.html",
-        context=base_context(request, db, user, answer=None, provider=assistant_provider_name()),
+        context=base_context(
+            request,
+            db,
+            user,
+            answer=None,
+            provider=assistant_provider_name(),
+            patients=visible_patients(db, user),
+            selected_patient_id=None,
+        ),
     )
 
 
@@ -251,7 +278,15 @@ def assistant_answer(
     return templates.TemplateResponse(
         request=request,
         name="assistant.html",
-        context=base_context(request, db, user, answer=answer, provider=assistant_provider_name()),
+        context=base_context(
+            request,
+            db,
+            user,
+            answer=answer,
+            provider=assistant_provider_name(),
+            patients=visible_patients(db, user),
+            selected_patient_id=patient_id,
+        ),
     )
 
 
