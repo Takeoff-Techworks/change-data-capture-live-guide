@@ -1,1 +1,47 @@
-{% extends "base.html" %}{% block content %}<h2>Nurse coordination queue</h2><table><tr><th>Patient</th><th>Priority</th><th>Reasons</th><th>Tasks</th><th>Referrals</th><th>Freshness</th></tr>{% for q in queue %}<tr><td>{{q.patient_display_name}}</td><td>{{q.priority_score}}</td><td>{{q.priority_reasons_json}}</td><td>{{q.open_task_count}} open / {{q.overdue_task_count}} overdue</td><td>{{q.pending_referral_count}} pending</td><td>{{q.projection_updated_at}}</td></tr>{% endfor %}</table><h3>Task actions</h3>{% for t in tasks %}<p>{{t.task_type}} · {{patient_names.get(t.patient_id) or "Name unavailable"}} · {{t.status}} <form class="inline" method="post" action="/nurse/tasks/{{t.task_id}}/{% if t.status == 'completed' %}reopen{% else %}complete{% endif %}?persona={{persona.user_id}}"><button>{% if t.status == 'completed' %}Reopen{% else %}Complete{% endif %}</button></form></p>{% endfor %}{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h2>Nurse coordination queue</h2>
+<table>
+  <tr><th>Patient</th><th>Priority</th><th>Reasons</th><th>Tasks</th><th>Referrals</th><th>Freshness</th></tr>
+  {% for q in queue %}
+  <tr>
+    <td>{{q.patient_display_name}}</td>
+    <td>{{q.priority_score}}</td>
+    <td>{{q.priority_reasons_json}}</td>
+    <td>{{q.open_task_count}} open / {{q.overdue_task_count}} overdue</td>
+    <td>{{q.pending_referral_count}} pending</td>
+    <td>{{q.projection_updated_at}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<section class="task-actions" aria-labelledby="task-actions-heading">
+  <h3 id="task-actions-heading">Task actions</h3>
+  <div class="task-table-wrap">
+    <table class="task-table">
+      <thead>
+        <tr><th scope="col">Patient</th><th scope="col">Task</th><th scope="col">Status</th><th scope="col" class="task-action-cell">Action</th></tr>
+      </thead>
+      <tbody>
+        {% for t in tasks %}
+        {% set patient_name = patient_names.get(t.patient_id) or "Name unavailable" %}
+        {% set task_label = t.task_type|replace('_', ' ')|capitalize %}
+        {% set action = 'reopen' if t.status == 'completed' else 'complete' %}
+        <tr>
+          <td>{{patient_name}}</td>
+          <td>{{task_label}}</td>
+          <td><span class="task-status task-status--{{t.status}}">{{t.status|replace('_', ' ')|capitalize}}</span></td>
+          <td class="task-action-cell">
+            <form method="post" action="/nurse/tasks/{{t.task_id}}/{{action}}?persona={{persona.user_id}}">
+              <button aria-label="{{action|capitalize}} {{task_label|lower}} for {{patient_name}}">{{action|capitalize}}</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="task-empty">No tasks to show.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

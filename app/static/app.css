@@ -1,1 +1,20 @@
 :root{font-family:system-ui,sans-serif;color:#14212b;background:#f7fafc}body{margin:0}.warning{background:#713900;color:white;padding:.65rem;text-align:center;font-weight:700}header,main{max-width:1150px;margin:auto;padding:1rem}header{background:white}h1{margin:.2rem 0}nav a{margin-right:1rem}table{width:100%;border-collapse:collapse;background:white;margin:1rem 0}th,td{padding:.6rem;border:1px solid #d8e0e6;text-align:left}button,input,select{padding:.45rem;margin:.2rem}.inline{display:inline}section,details{background:white;padding:1rem;margin:1rem 0}pre{white-space:pre-wrap;overflow:auto}
+
+.task-actions{padding:0;margin:1.25rem 0 0;background:transparent}
+.task-actions h3{margin:0 0 .5rem;font-size:1rem}
+.task-table-wrap{overflow-x:auto;border:1px solid #d8e0e6;border-radius:8px;background:white}
+.task-table{margin:0;font-size:.875rem}
+.task-table th,.task-table td{padding:.4rem .65rem;border:0;border-bottom:1px solid #e7edf1;vertical-align:middle}
+.task-table th{background:#eef3f6;color:#526471;font-size:.75rem;font-weight:600}
+.task-table tbody tr:last-child td{border-bottom:0}
+.task-table tbody tr:hover{background:#f7fafc}
+.task-table .task-action-cell{width:1%;text-align:right;white-space:nowrap}
+.task-action-cell form{margin:0}
+.task-action-cell button{margin:0;min-height:32px;padding:.3rem .65rem;border:1px solid #b9c7d1;border-radius:5px;background:white;color:#14212b;font:inherit;font-weight:600;cursor:pointer}
+.task-action-cell button:hover{background:#eaf1f6;border-color:#7c94a6}
+.task-action-cell button:focus-visible{outline:2px solid #266b9d;outline-offset:2px}
+.task-status{display:inline-block;white-space:nowrap;padding:.15rem .5rem;border-radius:999px;background:#edf1f4;color:#465b6a;font-size:.75rem;font-weight:600}
+.task-status--open{background:#fff1d6;color:#785010}
+.task-status--in_progress{background:#e3effb;color:#285983}
+.task-status--completed{background:#e4f3e9;color:#2d6342}
+.task-table .task-empty{padding:.75rem;color:#526471;text-align:center}
